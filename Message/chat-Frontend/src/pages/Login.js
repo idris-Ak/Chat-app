@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import './Login.css';
+import './styles/Auth.css';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -37,58 +37,70 @@ export default function Login() {
   };
 
   return (
-    <div className="login-container">
-      <div className="login-box">
-        <div>
-          <h2 className="login-title">Sign in</h2>
-        </div>
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="email" className="input-label">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              className="input-field"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="password" className="input-label">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-form-container">
+          <h1 className="auth-title">Welcome Back</h1>
+          <p className="auth-subtitle">Please sign in to continue</p>
+          
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
+                Email Address
+              </label>
+              <input
+                id="email"
+                type="email"
+                className="form-input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                type="password"
+                className="form-input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                placeholder="Enter your password"
+              />
+            </div>
+            
             <button
               type="submit"
+              className="auth-button"
               disabled={loading}
-              className="submit-button"
             >
-              {loading ? 'Signing in...' : 'Sign in'}
+              {loading ? 'Signing in...' : 'Sign In'}
             </button>
-          </div>
-          <div className="text-center">
-            <Link to="/register" className="link">
-              Don't have an account? Sign up
-            </Link>
-          </div>
-        </form>
+          </form>
+          
+          <Link to="/register" className="auth-link">
+            Don't have an account? Sign up
+          </Link>
+        </div>
+        
+        <div className="auth-welcome">
+          <h2>Hello, Friend!</h2>
+          <p>Enter your personal details and start your journey with us</p>
+          <svg className="auth-decoration" viewBox="0 0 100 100">
+            {/* Add decorative SVG here */}
+          </svg>
+        </div>
       </div>
     </div>
   );

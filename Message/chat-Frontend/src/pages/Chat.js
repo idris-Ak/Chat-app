@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import './Chat.css';
+import './styles/Chat.css';
 import { useAuth } from '../contexts/AuthContext';
 import io from 'socket.io-client';
 import endpoints from '../services/api';

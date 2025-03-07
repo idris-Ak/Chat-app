@@ -1,131 +1,146 @@
 import { useState } from 'react';
-import './Register.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import './styles/Auth.css';
 
 export default function Register() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const { register } = useAuth();
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_BASE_URL;
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    if (password !== confirmPassword) {
-      return setError('Passwords do not  match');
+    setError('');
+
+    if (formData.password !== formData.confirmPassword) {
+      return setError('Passwords do not match');
     }
-  
+
+    setLoading(true);
+    
     try {
-      setError('');
-      setLoading(true);
-  
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, username }),
-      });
-
-      const textResponse = await response.json();  // Get raw response text
-
-      console.log(textResponse);  // Log the raw response text
-      if (response.ok) {
-        navigate('/login');
-      } else {
-        const data = await response.json();
-        console.log(data); // Check the content of the response
-        setError(data.message || 'Failed to register');
-      }
-    } catch (error) {
-      setError('Failed to create an account');
-      console.error('Registration error:', error);
+      await register(formData);
+      navigate('/');
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
-  
-    setLoading(false);
   };
-  
+
   return (
-    <div className="register-container">
-      <div className="register-box">
-        <div>
-          <h2 className="register-title">Sign up</h2>
+    <div className="auth-container">
+      <div className="auth-card">
+        <div className="auth-welcome">
+          <h2>Welcome Back!</h2>
+          <p>To keep connected with us please login with your personal info</p>
+          <Link to="/login" className="auth-button">
+            Sign In
+          </Link>
         </div>
-        {error && (
-          <div className="error-message">
-            {error}
-          </div>
-        )}
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="input-group">
-            <label htmlFor="username" className="input-label">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              required
-              className="input-field"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="email" className="input-label">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              required
-              className="input-field"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="password" className="input-label">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              className="input-field"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="input-group">
-            <label htmlFor="confirm-password" className="input-label">
-              Confirm Password
-            </label>
-            <input
-              id="confirm-password"
-              type="password"
-              required
-              className="input-field"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
-          <div>
+
+        <div className="auth-form-container">
+          <h1 className="auth-title">Create Account</h1>
+          <p className="auth-subtitle">Register with your details</p>
+          
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
+          
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label className="form-label" htmlFor="username">
+                Username
+              </label>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                className="form-input"
+                value={formData.username}
+                onChange={handleChange}
+                required
+                placeholder="Choose a username"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="email">
+                Email Address
+              </label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                className="form-input"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                placeholder="Enter your email"
+              />
+            </div>
+            
+            <div className="form-group">
+              <label className="form-label" htmlFor="password">
+                Password
+              </label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                className="form-input"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                placeholder="Create a password"
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label" htmlFor="confirmPassword">
+                Confirm Password
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                className="form-input"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
+                placeholder="Confirm your password"
+              />
+            </div>
+            
             <button
               type="submit"
+              className="auth-button"
               disabled={loading}
-              className="submit-button"
             >
-              {loading ? 'Creating account...' : 'Sign up'}
+              {loading ? 'Creating Account...' : 'Sign Up'}
             </button>
-          </div>
-          <div className="text-center">
-            <Link to="/login" className="link">
-              Already have an account? Sign in
-            </Link>
-          </div>
-        </form>
+          </form>
+          
+          <Link to="/login" className="auth-link">
+            Already have an account? Sign in
+          </Link>
+        </div>
       </div>
     </div>
   );
