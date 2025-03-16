@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import './styles/Auth.css';
 
 export default function Login() {
@@ -8,15 +7,13 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
 
   useEffect(() => {
-    // Show session expired message if it exists
     if (location.state?.message) {
       setError(location.state.message);
-      // Clear the message from location state
       navigate(location.pathname, { replace: true });
     }
   }, [location, navigate]);
@@ -26,11 +23,24 @@ export default function Login() {
     setError('');
     setLoading(true);
     
-    const result = await login(email, password);
-    if (result.success) {
-      navigate('/chat');
-    } else {
-      setError(result.error);
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem('token', data.token);
+        navigate('/');
+      } else {
+        setError(data.message || 'Failed to login');
+      }
+    } catch (error) {
+      setError('Failed to login');
+      console.error('Login error:', error);
     }
     
     setLoading(false);
@@ -97,9 +107,9 @@ export default function Login() {
         <div className="auth-welcome">
           <h2>Hello, Friend!</h2>
           <p>Enter your personal details and start your journey with us</p>
-          <svg className="auth-decoration" viewBox="0 0 100 100">
-            {/* Add decorative SVG here */}
-          </svg>
+          <Link to="/register" className="auth-button">
+            Sign Up
+          </Link>
         </div>
       </div>
     </div>

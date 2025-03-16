@@ -1,3 +1,4 @@
+const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const BlacklistedToken = require('../models/BlacklistedToken');
@@ -11,6 +12,16 @@ const generateToken = (user) => {
 };
 
 exports.register = async (req, res) => {
+    // Validate and sanitize input
+    await body('username').trim().isLength({ min: 3 }).withMessage('Username must be at least 3 characters long').run(req);
+    await body('email').isEmail().withMessage('Invalid email format').normalizeEmail().run(req);
+    await body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long').run(req);
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+
     try {
         const { username, email, password } = req.body;
 

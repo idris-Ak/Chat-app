@@ -3,6 +3,7 @@ const router = express.Router();
 const { sendMessage, getMessages, markAsRead, getAllMessages, createMessage } = require('../controllers/messageController');
 const auth = require('../middleware/auth');
 
+// Protected routes
 router.post('/send', auth, sendMessage);
 router.get('/conversation/:userId', auth, getMessages);
 router.put('/mark-read/:messageId', auth, markAsRead);

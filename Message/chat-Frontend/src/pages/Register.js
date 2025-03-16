@@ -1,58 +1,55 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import './styles/Auth.css';
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  });
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
   const navigate = useNavigate();
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
+  const API_URL = process.env.REACT_APP_API_BASE_URL;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-
-    if (formData.password !== formData.confirmPassword) {
+  
+    if (password !== confirmPassword) {
       return setError('Passwords do not match');
     }
-
-    setLoading(true);
-    
+  
     try {
-      await register(formData);
-      navigate('/');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
+      setError('');
+      setLoading(true);
+  
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password, username }),
+      });
+
+      const textResponse = await response.json();
+
+      console.log(textResponse);
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        const data = await response.json();
+        console.log(data);
+        setError(data.errors ? data.errors.map(err => err.msg).join(', ') : data.message || 'Failed to register');
+      }
+    } catch (error) {
+      setError('Failed to create an account');
+      console.error('Registration error:', error);
     }
+  
+    setLoading(false);
   };
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        <div className="auth-welcome">
-          <h2>Welcome Back!</h2>
-          <p>To keep connected with us please login with your personal info</p>
-          <Link to="/login" className="auth-button">
-            Sign In
-          </Link>
-        </div>
-
         <div className="auth-form-container">
           <h1 className="auth-title">Create Account</h1>
           <p className="auth-subtitle">Register with your details</p>
@@ -70,11 +67,10 @@ export default function Register() {
               </label>
               <input
                 id="username"
-                name="username"
                 type="text"
                 className="form-input"
-                value={formData.username}
-                onChange={handleChange}
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
                 placeholder="Choose a username"
               />
@@ -86,11 +82,10 @@ export default function Register() {
               </label>
               <input
                 id="email"
-                name="email"
                 type="email"
                 className="form-input"
-                value={formData.email}
-                onChange={handleChange}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Enter your email"
               />
@@ -102,27 +97,25 @@ export default function Register() {
               </label>
               <input
                 id="password"
-                name="password"
                 type="password"
                 className="form-input"
-                value={formData.password}
-                onChange={handleChange}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Create a password"
               />
             </div>
 
             <div className="form-group">
-              <label className="form-label" htmlFor="confirmPassword">
+              <label className="form-label" htmlFor="confirm-password">
                 Confirm Password
               </label>
               <input
-                id="confirmPassword"
-                name="confirmPassword"
+                id="confirm-password"
                 type="password"
                 className="form-input"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 placeholder="Confirm your password"
               />
@@ -139,6 +132,14 @@ export default function Register() {
           
           <Link to="/login" className="auth-link">
             Already have an account? Sign in
+          </Link>
+        </div>
+        
+        <div className="auth-welcome">
+          <h2>Welcome Back!</h2>
+          <p>To keep connected with us please login with your personal info</p>
+          <Link to="/login" className="auth-button">
+            Sign In
           </Link>
         </div>
       </div>
