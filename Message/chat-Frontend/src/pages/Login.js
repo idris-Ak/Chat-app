@@ -34,9 +34,14 @@ export default function Login() {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        navigate('/');
+        console.log('Data: ', data);
+        console.log('Stored token: ', localStorage.getItem('token'));
+        navigate('/chat');
+
       } else {
         setError(data.message || 'Failed to login');
+        console.log('Stored token: ', localStorage.getItem('token'));
+
       }
     } catch (error) {
       setError('Failed to login');

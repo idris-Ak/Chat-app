@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './styles/Chat.css';
 import { useAuth } from '../contexts/AuthContext';
 import io from 'socket.io-client';
 import endpoints from '../services/api';
+import Navigation from '../components/Navigation';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -106,83 +107,80 @@ export default function Chat() {
 
   return (
     <div className="chat-container">
-      {/* Users sidebar */}
-      <div className="sidebar">
-        <div className="sidebar-header">
-          <div className="flex items-center justify-between">
-            <span className="username">{user.username}</span>
-            <button
-              onClick={logout}
-              className="logout-button"
-            >
-              Logout
-            </button>
+      <Navigation />
+      <div className="chat-content">
+        {/* Users sidebar */}
+        <div className="sidebar">
+          <div className="sidebar-header">
+            <div className="flex items-center justify-between">
+              <span className="username">{user.username}</span>
+            </div>
           </div>
-        </div>
-        <div className="user-list">
-          {users.map(u => (
-            <div
-              key={u.id}
-              onClick={() => setSelectedUser(u)}
-              className={`user-item ${selectedUser?.id === u.id ? 'active' : ''}`}
-            >
-              {u.username}
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Chat area */}
-      <div className="chat-area">
-        {selectedUser ? (
-          <>
-            <div className="chat-header">
-              <h2 className="chat-username">{selectedUser.username}</h2>
-              {isTyping && (
-                <div className="typing-indicator">typing...</div>
-              )}
-            </div>
-            <div className="message-list">
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  className={`message-item ${msg.senderId === user.id ? 'sent' : 'received'}`}
-                >
-                  <div className="message-content">
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
-            </div>
-            <form onSubmit={sendMessage} className="message-form">
-              <div className="flex">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => {
-                    setMessage(e.target.value);
-                    socket.emit('typing', {
-                      recipientId: selectedUser.id,
-                      typing: e.target.value.length > 0
-                    });
-                  }}
-                  className="message-input"
-                  placeholder="Type a message..."
-                />
-                <button
-                  type="submit"
-                  className="send-button"
-                >
-                  Send
-                </button>
+          <div className="user-list">
+            {users.map(u => (
+              <div
+                key={u.id}
+                onClick={() => setSelectedUser(u)}
+                className={`user-item ${selectedUser?.id === u.id ? 'active' : ''}`}
+              >
+                {u.username}
               </div>
-            </form>
-          </>
-        ) : (
-          <div className="flex items-center justify-center h-full text-gray-500">
-            Select a user to start chatting
+            ))}
           </div>
-        )}
+        </div>
+
+        {/* Chat area */}
+        <div className="chat-area">
+          {selectedUser ? (
+            <>
+              <div className="chat-header">
+                <h2 className="chat-username">{selectedUser.username}</h2>
+                {isTyping && (
+                  <div className="typing-indicator">typing...</div>
+                )}
+              </div>
+              <div className="message-list">
+                {messages.map((msg, index) => (
+                  <div
+                    key={index}
+                    className={`message-item ${msg.senderId === user.id ? 'sent' : 'received'}`}
+                  >
+                    <div className="message-content">
+                      {msg.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <form onSubmit={sendMessage} className="message-form">
+                <div className="flex">
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => {
+                      setMessage(e.target.value);
+                      socket.emit('typing', {
+                        recipientId: selectedUser.id,
+                        typing: e.target.value.length > 0
+                      });
+                    }}
+                    className="message-input"
+                    placeholder="Type a message..."
+                  />
+                  <button
+                    type="submit"
+                    className="send-button"
+                  >
+                    Send
+                  </button>
+                </div>
+              </form>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500">
+              Select a user to start chatting
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

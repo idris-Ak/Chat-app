@@ -18,6 +18,6 @@ router.post('/login', login);
 // Protected routes
 router.post('/logout', auth, logout);
 router.get('/verify-token', auth, verifyToken);
-router.post('/validate', auth, validateToken);
+router.post('/validate', validateToken);
 
 module.exports = router;

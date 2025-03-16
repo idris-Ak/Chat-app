@@ -1,0 +1,86 @@
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 5%;
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.nav-brand a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #3B5998;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.nav-links a:hover {
+  color: #3B5998;
+}
+
+.login-btn, .register-btn, .logout-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn {
+  color: #3B5998;
+  border: 2px solid #3B5998;
+}
+
+.login-btn:hover {
+  background-color: #3B5998;
+  color: white;
+}
+
+.register-btn {
+  background-color: #3B5998;
+  color: white;
+}
+
+.register-btn:hover {
+  background-color: #2d4373;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 768px) {
+  .navigation {
+    flex-direction: column;
+    padding: 1rem;
+  }
+
+  .nav-links {
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+} 

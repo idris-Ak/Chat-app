@@ -3,6 +3,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Chat from './pages/Chat';
+import Landing from './pages/Landing';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -11,10 +12,11 @@ function App() {
       <AuthProvider>
         <div className="min-h-screen bg-gray-100">
           <Routes>
+            <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route
-              path="/"
+              path="/chat"
               element={
                 <PrivateRoute>
                   <Chat />

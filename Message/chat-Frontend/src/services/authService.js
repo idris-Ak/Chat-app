@@ -6,7 +6,8 @@ class AuthService {
       const response = await fetch(endpoints.auth.validate(), {
         method: 'POST',
         headers: { 
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ token })
       });
