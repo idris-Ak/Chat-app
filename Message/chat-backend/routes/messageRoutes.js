@@ -1,13 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { sendMessage, getMessages, markAsRead, getAllMessages, createMessage } = require('../controllers/messageController');
+const { sendMessage, getMessages, markAsRead } = require('../controllers/messageController');
 const auth = require('../middleware/auth');
 
-// Protected routes
-router.post('/send', auth, sendMessage);
+// All routes are protected
+router.post('/', auth, sendMessage);
 router.get('/conversation/:userId', auth, getMessages);
 router.put('/mark-read/:messageId', auth, markAsRead);
-router.get('/', getAllMessages);
-router.post('/', createMessage);
 
 module.exports = router;

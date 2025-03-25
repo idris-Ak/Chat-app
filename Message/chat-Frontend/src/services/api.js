@@ -1,4 +1,4 @@
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3001/api';
 
 const endpoints = {
   auth: {
@@ -13,9 +13,9 @@ const endpoints = {
     getById: (id) => `${API_BASE_URL}/users/${id}`,
   },
   messages: {
-    getAll: (senderId, recipientId) => 
-      `${API_BASE_URL}/messages?senderId=${senderId}&recipientId=${recipientId}`,
-    create: () => `${API_BASE_URL}/messages`,
+    getConversation: (userId) => `${API_BASE_URL}/messages/conversation/${userId}`,
+    send: () => `${API_BASE_URL}/messages`,
+    markAsRead: (messageId) => `${API_BASE_URL}/messages/mark-read/${messageId}`
   }
 };
 
