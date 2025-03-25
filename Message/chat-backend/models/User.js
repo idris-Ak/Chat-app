@@ -29,6 +29,14 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     },
+    avatar: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    bio: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
     lastSeen: {
         type: DataTypes.DATE
     }

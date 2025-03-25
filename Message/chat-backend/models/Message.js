@@ -31,17 +31,12 @@ const Message = sequelize.define('Message', {
         type: DataTypes.BOOLEAN,
         defaultValue: false
     }
+}, {
+    indexes: [
+        {
+            fields: ['senderId', 'receiverId']
+        }
+    ]
 });
-
-Message.associate = (models) => {
-    Message.belongsTo(models.User, {
-        foreignKey: 'senderId',
-        as: 'sender'
-    });
-    Message.belongsTo(models.User, {
-        foreignKey: 'receiverId',
-        as: 'receiver'
-    });
-};
 
 module.exports = Message; 

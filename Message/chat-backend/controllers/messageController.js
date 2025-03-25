@@ -16,7 +16,7 @@ exports.sendMessage = async (req, res) => {
             return res.status(404).json({ message: 'Recipient not found' });
         }
 
-        // Create message
+        // Create message with associations
         const message = await Message.create({
             content,
             senderId,
@@ -25,21 +25,26 @@ exports.sendMessage = async (req, res) => {
 
         console.log('Message created:', message.id);
 
-        // Fetch the complete message with sender and recipient info
+        // Fetch the complete message with all necessary associations
         const completeMessage = await Message.findByPk(message.id, {
             include: [
                 {
                     model: User,
                     as: 'sender',
-                    attributes: ['id', 'username']
+                    attributes: ['id', 'username', 'avatar']
                 },
                 {
                     model: User,
                     as: 'recipient',
-                    attributes: ['id', 'username']
+                    attributes: ['id', 'username', 'avatar']
                 }
             ]
         });
+
+        // Emit the message through socket if available
+        if (req.app.get('io')) {
+            req.app.get('io').to(receiverId).emit('message', completeMessage);
+        }
 
         console.log('Complete message:', completeMessage);
         res.status(201).json(completeMessage);
@@ -54,7 +59,24 @@ exports.getMessages = async (req, res) => {
         const { userId } = req.params;
         const currentUserId = req.user.id;
 
-        console.log('Fetching messages between:', { currentUserId, userId });
+        console.log('Fetching messages between users:', { currentUserId, userId });
+
+        // Validate UUIDs
+        if (!userId || !currentUserId) {
+            console.error('Invalid user IDs:', { currentUserId, userId });
+            return res.status(400).json({ message: 'Invalid user IDs provided' });
+        }
+
+        // First check if both users exist
+        const [currentUser, otherUser] = await Promise.all([
+            User.findByPk(currentUserId),
+            User.findByPk(userId)
+        ]);
+
+        if (!currentUser || !otherUser) {
+            console.error('One or both users not found:', { currentUserId, userId });
+            return res.status(404).json({ message: 'One or both users not found' });
+        }
 
         // Get conversation messages
         const messages = await Message.findAll({
@@ -79,11 +101,15 @@ exports.getMessages = async (req, res) => {
             ]
         });
 
-        console.log('Found messages:', messages.length);
+        console.log(`Found ${messages.length} messages`);
         res.json(messages);
     } catch (error) {
-        console.error('Get messages error:', error);
-        res.status(500).json({ message: 'Error retrieving messages', error: error.message });
+        console.error('Error in getMessages:', error);
+        res.status(500).json({ 
+            message: 'Error retrieving messages', 
+            error: error.message,
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+        });
     }
 };
 
