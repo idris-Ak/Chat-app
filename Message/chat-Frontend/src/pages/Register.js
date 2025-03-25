@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Navigation from '../components/Navigation';
 import './styles/Auth.css';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
   const [email, setEmail] = useState('');
@@ -10,7 +12,15 @@ export default function Register() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth();
   const API_URL = process.env.REACT_APP_API_BASE_URL;
+
+  useEffect(() => {
+    // If user is already logged in, redirect to chat
+    if (user) {
+      navigate('/chat');
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +43,8 @@ export default function Register() {
 
       console.log(textResponse);
       if (response.ok) {
-        navigate('/login');
+        localStorage.setItem('token', textResponse.token);
+        navigate('/chat');
       } else {
         const data = await response.json();
         console.log(data);
@@ -49,6 +60,9 @@ export default function Register() {
 
   return (
     <div className="auth-container">
+      <header className="auth-header">
+        <Navigation />
+      </header>
       <div className="auth-card">
         <div className="auth-form-container">
           <h1 className="auth-title">Create Account</h1>

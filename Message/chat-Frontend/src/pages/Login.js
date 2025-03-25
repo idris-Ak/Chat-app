@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import Navigation from '../components/Navigation';
+import { useAuth } from '../contexts/AuthContext';
 import './styles/Auth.css';
 
 export default function Login() {
@@ -9,7 +11,14 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const API_URL = process.env.REACT_APP_API_BASE_URL;
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    // If user is already logged in, redirect to chat
+    if (user) {
+      navigate('/chat');
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     if (location.state?.message) {
@@ -24,24 +33,13 @@ export default function Login() {
     setLoading(true);
     
     try {
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('token', data.token);
-        console.log('Data: ', data);
-        console.log('Stored token: ', localStorage.getItem('token'));
-        navigate('/chat');
-
+      const result = await login(email, password);
+      
+      if (result.success) {
+        // The AuthContext will handle the navigation after proper session verification
+        // No need to navigate here as the first useEffect will handle it
       } else {
-        setError(data.message || 'Failed to login');
-        console.log('Stored token: ', localStorage.getItem('token'));
-
+        setError(result.error);
       }
     } catch (error) {
       setError('Failed to login');
@@ -53,6 +51,9 @@ export default function Login() {
 
   return (
     <div className="auth-container">
+      <header className="auth-header">
+        <Navigation />
+      </header>
       <div className="auth-card">
         <div className="auth-form-container">
           <h1 className="auth-title">Welcome Back</h1>
