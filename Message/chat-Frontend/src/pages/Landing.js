@@ -14,7 +14,7 @@ const Landing = () => {
         <div className="hero-section">
           <div className="hero-content">
             <h1>GET TASKS DONE WITH EASE!</h1>
-            <p>Post your tasks right now!</p>
+            <p>Post your tasks right noww!</p>
             <p className="subtitle">Choose the right person. Get it done with ease!</p>
             <div className="cta-buttons">
               <Link to="/login" className="cta-btn login">Log In</Link>
