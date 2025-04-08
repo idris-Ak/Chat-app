@@ -1,5 +1,9 @@
 require('dotenv').config(); // Must be first
-console.log("🛠 Loaded DB_USER:", process.env.DB_USER);
+console.log("🔍 DB ENV LOADED:");
+console.log("    DB_USER:", process.env.DB_USER);
+console.log("    DB_PASSWORD:", process.env.DB_PASSWORD);
+console.log("    DB_HOST:", process.env.DB_HOST);
+console.log("    DB_NAME:", process.env.DB_NAME);
 
 
 const express = require('express');
