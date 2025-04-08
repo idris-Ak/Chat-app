@@ -2,6 +2,15 @@ const { Sequelize } = require('sequelize');
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 
+// DEBUG: Force check what's loaded
+console.log("🔍 ORIGINAL ENV USER:", process.env.DB_USER);
+
+// 🛠 Temporarily force the env values (for debugging only!)
+process.env.DB_USER = "ITBOOST_ADMIN";
+process.env.DB_PASSWORD = "Pass123!";
+
+console.log("🔧 FORCED DB_USER:", process.env.DB_USER);
+
 // Function to create database if it doesn't exist
 async function createDatabase() {
     try {
@@ -12,12 +21,14 @@ async function createDatabase() {
             password: process.env.DB_PASSWORD
         });
 
+        console.log("🐛 mysql2 connection.user =", connection.config.user);
+
         await connection.query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME}`);
         await connection.end();
-        
-        console.log('Database check/creation completed');
+
+        console.log('✅ Database check/creation completed');
     } catch (error) {
-        console.error('Error creating database:', error);
+        console.error('❌ Error creating database:', error);
         throw error;
     }
 }
@@ -41,4 +52,4 @@ const sequelize = new Sequelize(
     }
 );
 
-module.exports = { sequelize, createDatabase }; 
+module.exports = { sequelize, createDatabase };
