@@ -7,50 +7,26 @@ exports.sendMessage = async (req, res) => {
         const { receiverId, content } = req.body;
         const senderId = req.user.id;
 
-        console.log('Received message request:', { receiverId, content, senderId });
-
-        // Check if recipient exists
-        const recipient = await User.findByPk(receiverId);
-        if (!recipient) {
-            console.log('Recipient not found:', receiverId);
-            return res.status(404).json({ message: 'Recipient not found' });
+        if (!receiverId || !content) {
+            return res.status(400).json({ message: 'receiverId and content are required' });
         }
 
-        // Create message with associations
         const message = await Message.create({
-            content,
             senderId,
-            receiverId
+            receiverId,
+            content,
+            read: false
         });
 
-        console.log('Message created:', message.id);
-
-        // Fetch the complete message with all necessary associations
-        const completeMessage = await Message.findByPk(message.id, {
-            include: [
-                {
-                    model: User,
-                    as: 'sender',
-                    attributes: ['id', 'username', 'avatar']
-                },
-                {
-                    model: User,
-                    as: 'recipient',
-                    attributes: ['id', 'username', 'avatar']
-                }
-            ]
-        });
-
-        // Emit the message through socket if available
+        // If you're using Socket.io, emit the message to the receiver
         if (req.app.get('io')) {
-            req.app.get('io').to(receiverId).emit('message', completeMessage);
+            req.app.get('io').to(receiverId).emit('message', message);
         }
 
-        console.log('Complete message:', completeMessage);
-        res.status(201).json(completeMessage);
+        res.status(201).json(message);
     } catch (error) {
-        console.error('Send message error:', error);
-        res.status(500).json({ message: 'Error sending message', error: error.message });
+        console.error('Error sending message:', error);
+        res.status(500).json({ message: 'Error sending message' });
     }
 };
 
@@ -95,7 +71,7 @@ exports.getMessages = async (req, res) => {
                 },
                 {
                     model: User,
-                    as: 'recipient',
+                    as: 'receiver',
                     attributes: ['id', 'username']
                 }
             ]
@@ -116,25 +92,21 @@ exports.getMessages = async (req, res) => {
 exports.markAsRead = async (req, res) => {
     try {
         const { messageId } = req.params;
-        const userId = req.user.id;
-
-        const message = await Message.findByPk(messageId);
-
-        if (!message) {
-            return res.status(404).json({ message: 'Message not found' });
-        }
-
-        // Ensure user is the recipient of the message
-        if (message.receiverId !== userId) {
-            return res.status(403).json({ message: 'Unauthorized' });
-        }
-
-        await message.update({ read: true });
+        
+        await Message.update(
+            { isRead: true },
+            { 
+                where: { 
+                    id: messageId,
+                    receiverId: req.user.id
+                }
+            }
+        );
 
         res.json({ message: 'Message marked as read' });
     } catch (error) {
-        console.error('Mark as read error:', error);
-        res.status(500).json({ message: 'Error marking message as read', error: error.message });
+        console.error('Error marking message as read:', error);
+        res.status(500).json({ message: 'Error updating message' });
     }
 };
 
@@ -160,5 +132,27 @@ exports.createMessage = async (req, res) => {
         res.status(201).json(message);
     } catch (error) {
         res.status(500).json({ message: 'Error creating message', error });
+    }
+};
+
+exports.getConversation = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const currentUserId = req.user.id;
+
+        const messages = await Message.findAll({
+            where: {
+                [Op.or]: [
+                    { senderId: currentUserId, receiverId: userId },
+                    { senderId: userId, receiverId: currentUserId }
+                ]
+            },
+            order: [['createdAt', 'ASC']]
+        });
+
+        res.json(messages);
+    } catch (error) {
+        console.error('Error getting conversation:', error);
+        res.status(500).json({ message: 'Error retrieving messages' });
     }
 };
