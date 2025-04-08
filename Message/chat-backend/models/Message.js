@@ -1,7 +1,10 @@
-const { DataTypes } = require('sequelize');
+const { Model, DataTypes } = require('sequelize');
 const { sequelize } = require('../config/db');
+const User = require('./User'); // ✅ You must import this
 
-const Message = sequelize.define('Message', {
+class Message extends Model {}
+
+Message.init({
     id: {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
@@ -32,11 +35,13 @@ const Message = sequelize.define('Message', {
         defaultValue: false
     }
 }, {
-    indexes: [
-        {
-            fields: ['senderId', 'receiverId']
-        }
-    ]
+    sequelize,
+    modelName: 'Message',
+    timestamps: true
 });
 
-module.exports = Message; 
+// ✅ Correct place to define associations:
+Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+
+module.exports = Message;
