@@ -40,8 +40,5 @@ Message.init({
     timestamps: true
 });
 
-// ✅ Correct place to define associations:
-Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
-Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
 
 module.exports = Message;

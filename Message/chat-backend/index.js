@@ -1,35 +1,24 @@
+
 require('dotenv').config({ path: __dirname + '/.env' });
 
-
-console.log("🔍 DB ENV LOADED:");
-console.log("    DB_USER:", process.env.DB_USER);
-console.log("    DB_PASSWORD:", process.env.DB_PASSWORD);
-console.log("    DB_HOST:", process.env.DB_HOST);
-console.log("    DB_NAME:", process.env.DB_NAME);
-
 const express = require('express');
-const http = require('http');
 const cors = require('cors');
+const http = require('http');
 
 const { sequelize, createDatabase } = require('./config/db');
 const initializeSocket = require('./Socket');
+const authRoutes = require('./routes/authRoutes');
+const messageRoutes = require('./routes/messageRoutes');
+const userRoutes = require('./routes/userRoutes');
+const auth = require('./middleware/auth');
 
+// Import models
 const User = require('./models/User');
 const Message = require('./models/Message');
 const BlacklistedToken = require('./models/BlacklistedToken');
 
-// Sequelize Associations (critical)
-User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
-User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
-
-
-const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-
 const app = express();
 const server = http.createServer(app);
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
@@ -37,11 +26,17 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/users', userRoutes);
 
-// Sockets
-initializeSocket(server);
+// Initialize Socket.io
+const io = initializeSocket(server);
+
+// Set up associations
+User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
+User.hasMany(Message, { foreignKey: 'receiverId', as: 'receivedMessages' });
+Message.belongsTo(User, { foreignKey: 'senderId', as: 'sender' });
+Message.belongsTo(User, { foreignKey: 'receiverId', as: 'receiver' });
 
 // Graceful crash visibility for async errors
 process.on('unhandledRejection', (err) => {
@@ -49,22 +44,26 @@ process.on('unhandledRejection', (err) => {
   process.exit(1);
 });
 
-// DB Sync & Start
-async function startServer() {
-  try {
-    await createDatabase();
-    await sequelize.authenticate();
-    await sequelize.sync({ alter: true });
-    console.log('✅ Database synced successfully');
+// Database connection and server start
+const PORT = process.env.PORT || 3001;
 
-    server.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
-      console.log(`🗃 Connected to DB: ${process.env.DB_NAME}`);
-    });
-  } catch (err) {
-    console.error('❌ Failed to start server:', err);
-    process.exit(1);
-  }
+async function startServer() {
+    try {
+        await createDatabase();
+        await sequelize.authenticate();
+        console.log('✅ Database connection established successfully.');
+
+        await sequelize.sync({ alter: true });
+        console.log('✅ Database models synchronized.');
+
+        server.listen(PORT, () => {
+            console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
+            console.log(`🗃 Connected to DB: ${process.env.DB_NAME}`);
+        });
+    } catch (error) {
+        console.error('❌ Unable to start server:', error);
+        process.exit(1);
+    }
 }
 
 startServer();
