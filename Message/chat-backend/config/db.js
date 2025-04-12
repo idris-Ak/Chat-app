@@ -5,12 +5,6 @@ const mysql = require('mysql2/promise');
 // DEBUG: Force check what's loaded
 console.log("🔍 ORIGINAL ENV USER:", process.env.DB_USER);
 
-// 🛠 Temporarily force the env values (for debugging only!)
-process.env.DB_USER = "ITBOOST_ADMIN";
-process.env.DB_PASSWORD = "Pass123!";
-
-console.log("🔧 FORCED DB_USER:", process.env.DB_USER);
-
 // Function to create database if it doesn't exist
 async function createDatabase() {
     try {
