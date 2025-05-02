@@ -31,9 +31,9 @@ const Navigation = () => {
           </>
         ) : (
           <>
-            <Link to="/">Browse</Link>
-            <Link to="/">How It Works</Link>
-            <Link to="/">Contact Us</Link>
+            <Link to="/Browse">Browse</Link>
+            <Link to="/how-it-works">How It Works</Link>
+            <Link to="/contact">Contact Us</Link>
             <Link to="/login" className="login-btn">Log In</Link>
             <Link to="/register" className="register-btn">Register</Link>
           </>

@@ -1,0 +1,68 @@
+.browse-container {
+    background-color: #f9f9f9;
+    min-height: 100vh;
+  }
+  
+  .browse-header {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .browse-main {
+    padding: 2rem;
+  }
+  
+  .browse-main h1 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #333;
+    text-align: center;
+  }
+  
+  .task-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .task-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-4px);
+  }
+  
+  .task-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+  }
+  
+  .task-info {
+    padding: 1rem;
+  }
+  
+  .task-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .task-desc {
+    font-size: 0.95rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+  }
+  
+  .task-location,
+  .task-budget {
+    font-size: 0.9rem;
+    color: #333;
+    font-weight: 500;
+  }
+  
