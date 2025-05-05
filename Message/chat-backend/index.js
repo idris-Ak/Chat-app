@@ -11,6 +11,8 @@ const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const auth = require('./middleware/auth');
+const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000'];
+
 
 // Import models
 const User = require('./models/User');
@@ -21,8 +23,18 @@ const app = express();
 const server = http.createServer(app);
 
 // Middleware
-app.use(cors());
-app.use(express.json());
+
+app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
+  
+  app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
