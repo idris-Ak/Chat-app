@@ -21,17 +21,14 @@ export default function Chat() {
   const messageListRef = useRef(null);
 
   useEffect(() => {
-    const newSocket = io('http://localhost:3001', {
+    const newSocket = io('https://api.jtaskhubbeta.com.au', {
       auth: {
         token: localStorage.getItem('token')
-      }
+      },
+      transports: ['websocket']
     });
-
-    newSocket.on('connect', () => {
-      console.log('Connected to socket server');
-    });
-
-    newSocket.on('message', (newMessage) => {
+  
+    const handleMessage = (newMessage) => {
       if (newMessage) {
         setMessages(prev => {
           const exists = prev.some(msg => msg.id === newMessage.id);
@@ -40,7 +37,7 @@ export default function Chat() {
           }
           return prev;
         });
-
+  
         if (selectedUser && newMessage.senderId === selectedUser.id) {
           newSocket.emit('messageRead', {
             messageId: newMessage.id,
@@ -48,34 +45,47 @@ export default function Chat() {
           });
         }
       }
-    });
-
-    newSocket.on('typing', ({ userId, typing }) => {
+    };
+  
+    const handleTyping = ({ userId, typing }) => {
       if (selectedUser?.id === userId) {
         setIsTyping(typing);
       }
-    });
-
-    newSocket.on('messageRead', ({ messageId }) => {
-      setMessages(prev => 
-        prev.map(msg => 
+    };
+  
+    const handleMessageRead = ({ messageId }) => {
+      setMessages(prev =>
+        prev.map(msg =>
           msg.id === messageId ? { ...msg, read: true } : msg
         )
       );
-    });
-
-    newSocket.on('userStatus', ({ userId, isOnline }) => {
-      setUsers(prev => 
-        prev.map(u => 
+    };
+  
+    const handleUserStatus = ({ userId, isOnline }) => {
+      setUsers(prev =>
+        prev.map(u =>
           u.id === userId ? { ...u, isOnline } : u
         )
       );
-    });
-
+    };
+  
+    newSocket.on('connect', () => console.log('✅ Connected to socket server'));
+    newSocket.on('message', handleMessage);
+    newSocket.on('typing', handleTyping);
+    newSocket.on('messageRead', handleMessageRead);
+    newSocket.on('userStatus', handleUserStatus);
+  
     setSocket(newSocket);
-
-    return () => newSocket.close();
-  }, [selectedUser]);
+  
+    return () => {
+      newSocket.off('message', handleMessage);
+      newSocket.off('typing', handleTyping);
+      newSocket.off('messageRead', handleMessageRead);
+      newSocket.off('userStatus', handleUserStatus);
+      newSocket.close();
+    };
+  }, []);
+  
 
   useEffect(() => {
     const fetchUsers = async () => {

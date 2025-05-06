@@ -5,8 +5,7 @@ const User = require('../models/User');
 function initializeSocket(server) {
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:3000",
-            origin: "https://jtaskhubbeta.com.au",
+            origin: ["http://localhost:3000", "https://jtaskhubbeta.com.au"],
             methods: ["GET", "POST"]
         }
     });

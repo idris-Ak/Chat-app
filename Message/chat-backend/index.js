@@ -11,7 +11,7 @@ const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const auth = require('./middleware/auth');
-const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000'];
+const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000', 'https://api.jtaskhubbeta.com.au'];
 
 
 // Import models
@@ -35,6 +35,13 @@ app.use(cors({
   }));
   
   app.use(express.json());
+
+  app.set('trust proxy', true);
+
+  app.use((req, res, next) => {
+    console.log(`💡 Incoming: ${req.method} ${req.originalUrl}`);
+    next();
+  });
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -68,7 +75,7 @@ async function startServer() {
         await sequelize.sync({ force: true });
         console.log('✅ Database models synchronized.');
 
-        server.listen(PORT, () => {
+        server.listen(PORT,'0.0.0.0', () => {
             console.log(`🚀 Server running on port ${PORT} [${process.env.NODE_ENV || 'development'}]`);
             console.log(`🗃 Connected to DB: ${process.env.DB_NAME}`);
         });
