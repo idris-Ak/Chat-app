@@ -8,6 +8,7 @@ import Landing from './pages/Landing';
 import Browse from './pages/Browse';
 import HowItWorks from './pages/HowItWorks';
 import Contact from './pages/Contact';
+import LandingPage from './pages/LandingPage';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/browse" element={<Browse />} />
+            <Route path="/LandingPage" element={<LandingPage />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/contact" element={<Contact />} />
             <Route
