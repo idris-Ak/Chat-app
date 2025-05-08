@@ -36,7 +36,7 @@ app.use(cors({
   
   app.use(express.json());
 
-  app.set('trust proxy', true);
+  app.set('trust proxy', 1);
 
   app.use((req, res, next) => {
     console.log(`💡 Incoming: ${req.method} ${req.originalUrl}`);

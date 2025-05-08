@@ -22,6 +22,7 @@ export default function Chat() {
 
   useEffect(() => {
     const newSocket = io('https://api.jtaskhubbeta.com.au', {
+      path: '/socket.io/',  // <-- add this explicitly
       auth: {
         token: localStorage.getItem('token')
       },
