@@ -9,12 +9,14 @@ module.exports = (io) => {
         try {
             const token = socket.handshake.auth.token;
             if (!token) {
+                console.warn('⚠️ Socket rejected: missing token');
                 return next(new Error('Authentication error'));
             }
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET);
             const user = await User.findByPk(decoded.id);
             if (!user) {
+                console.warn('⚠️ Socket rejected: invalid token');
                 return next(new Error('User not found'));
             }
 
