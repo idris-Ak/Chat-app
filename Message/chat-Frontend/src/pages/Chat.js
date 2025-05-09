@@ -26,7 +26,7 @@ export default function Chat() {
       auth: {
         token: localStorage.getItem('token')
       },
-      transports: ['websocket']
+      transports: ['polling','websocket']
     });
   
     const handleMessage = (newMessage) => {
