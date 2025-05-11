@@ -4,6 +4,7 @@ const User = require('../models/User');
 
 function initializeSocket(server) {
     const io = new Server(server, {
+        path: "/socket.io",
         cors: {
             origin: ["http://localhost:3000", "https://jtaskhubbeta.com.au","https://ws.jtaskhubbeta.com.au"],
             methods: ["GET", "POST"]
