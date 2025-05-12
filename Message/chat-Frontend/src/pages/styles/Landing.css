@@ -112,10 +112,10 @@
   background-size: cover;
   background-position: center;
   border-radius: 10px;
-  width: 100%;
+  width: 60%;
   height: 100%;
-  objectFit: cover;
-  borderRadius: 10px;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
 .how-it-works {
