@@ -1,16 +1,22 @@
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+require('dotenv').config(); // Make sure this is loaded at the top if not already
+
 
 function initializeSocket(server) {
     const io = new Server(server, {
         transports: ["websocket", "polling"], // <-- ADD THIS
         path: "/socket.io",
+        allowEIO3: true, // ✅ SUPPORTS older Engine.IO clients
+
         cors: {
-            origin: ["http://localhost:3000", "https://jtaskhubbeta.com.au","https://ws.jtaskhubbeta.com.au"],
-            methods: ["GET", "POST"]
+            origin: process.env.CORS_ORIGIN, // 👈 uses env variable
+            methods: ["GET", "POST"],
+            credentials: false
         }
     });
+    console.log('✅ Socket/index.js loaded');
 
     io.use(async (socket, next) => {
         try {
