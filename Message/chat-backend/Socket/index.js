@@ -5,6 +5,9 @@ require('dotenv').config(); // Make sure this is loaded at the top if not alread
 
 
 function initializeSocket(server) {
+
+    console.log('🧾 WS CORS_ORIGIN:', process.env.CORS_ORIGIN_WEB_SOCKET);
+    
     const io = new Server(server, {
         transports: ["websocket", "polling"], // <-- ADD THIS
         path: "/socket.io",

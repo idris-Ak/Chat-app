@@ -8,6 +8,7 @@ import HowItWorks from '../pages/HowItWorks';
 import Contact from '../pages/Contact';
 import LandingPage from '../pages/LandingPage';
 import PrivateRoute from '../components/PrivateRoute';
+import FlexibleRouteHandler from '../pages/FlexibleRouteHandler'; // Import the new component
 
 const routes = [
   { path: '/', element: <Landing /> },
@@ -25,6 +26,10 @@ const routes = [
         <Chat />
       </PrivateRoute>
     ),
+  },
+  {
+    path: '*',
+    element: <FlexibleRouteHandler />
   },
 ];
 
