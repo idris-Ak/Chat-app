@@ -170,6 +170,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 25px 35px;
+  display: flex;
+  flex-direction: column;
 }
 
 .message-item {
@@ -191,7 +193,17 @@
 }
 
 .message-item.sent .message-content {
-  background-color: #e3effd;
+  background-color: #4f6ebd; /* sender = blue */
+  color: white;
+  align-self: flex-end;
+  border-radius: 16px 16px 4px 16px;
+}
+
+.message-item.received .message-content {
+  background-color: #f1f1f1; /* receiver = grey */
+  color: #333;
+  align-self: flex-start;
+  border-radius: 16px 16px 16px 4px;
 }
 
 .message-time {
@@ -242,26 +254,40 @@
   margin-left: 10px;
 }
 
+/* RESPONSIVE UI */
 @media (max-width: 768px) {
-  .menu {
-    width: 50px;
+  .chat-container {
+    flex-direction: column;
+    height: 100vh;
   }
-  
+
+  .menu {
+    height: 60px;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+  }
+
   .sidebar {
     width: 100%;
-    position: fixed;
-    left: -100%;
-    top: 60px;
-    bottom: 0;
-    z-index: 1000;
-    transition: left 0.3s ease;
+    height: 200px;
+    overflow-y: auto;
   }
-  
-  .sidebar.active {
-    left: 0;
-  }
-  
+
   .chat-area {
-    width: calc(100% - 50px);
+    width: 100%;
+    flex: 1;
   }
-} 
+
+  .chat-header {
+    height: 60px;
+  }
+
+  .message-input {
+    font-size: 14px;
+  }
+
+  .message-content {
+    max-width: 85%;
+  }
+}

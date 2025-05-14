@@ -13,10 +13,20 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       const token = localStorage.getItem('token');
       console.log('Token in AuthContext: ', token);
+      if (!token) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }  
+
       if (token) {
         try {
           const userData = await AuthService.validateToken(token);
-          setUser(userData);
+          if (userData.valid && userData.decoded) {
+            setUser(userData.decoded); // ✅ ONLY the payload
+          } else {
+            setUser(null);
+          }
         } catch (error) {
           console.error('Auth initialization error:', error);
           navigate('/login', { 

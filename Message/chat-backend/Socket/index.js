@@ -14,7 +14,7 @@ function initializeSocket(server) {
         allowEIO3: true, // ✅ SUPPORTS older Engine.IO clients
 
         cors: {
-            origin: process.env.CORS_ORIGIN, // 👈 uses env variable
+            origin: process.env.CORS_ORIGIN_WEB_SOCKET, // 👈 uses env variable
             methods: ["GET", "POST"],
             credentials: false
         }
