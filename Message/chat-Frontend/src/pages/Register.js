@@ -41,13 +41,13 @@ export default function Register() {
 
       const textResponse = await response.json();
 
-      console.log(textResponse);
+      // console.log(textResponse);  // 🧪 Debug output
       if (response.ok) {
         localStorage.setItem('token', textResponse.token);
         navigate('/chat');
       } else {
         const data = await response.json();
-        console.log(data);
+        // console.log(data); // 🧪 Debug output
         setError(data.errors ? data.errors.map(err => err.msg).join(', ') : data.message || 'Failed to register');
       }
     } catch (error) {

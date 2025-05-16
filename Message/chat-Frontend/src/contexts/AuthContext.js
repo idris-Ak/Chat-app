@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('token');
-      console.log('Token in AuthContext: ', token);
+      // console.log('Token in AuthContext: ', token);  // 🧪 Debug output
       if (!token) {
         setUser(null);
         setLoading(false);
