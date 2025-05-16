@@ -6,6 +6,7 @@ exports.sendMessage = async (req, res) => {
     try {
         const { receiverId, content } = req.body;
         const senderId = req.user.id;
+        const io = req.app.get('io');
 
         if (!receiverId || !content) {
             return res.status(400).json({ message: 'receiverId and content are required' });
@@ -17,11 +18,12 @@ exports.sendMessage = async (req, res) => {
             content,
             read: false
         });
+        
 
-        // If you're using Socket.io, emit the message to the receiver
-        if (req.app.get('io')) {
-            req.app.get('io').to(receiverId).emit('message', message);
-        }
+
+        console.log(`🔔 Emitting 'new-message' to users: ${receiverId}, ${senderId}`);
+        io.to([receiverId, senderId]).emit('new-message', message);
+        
 
         res.status(201).json(message);
     } catch (error) {

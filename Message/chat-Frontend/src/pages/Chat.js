@@ -73,7 +73,7 @@ export default function Chat() {
     };
 
     newSocket.on('connect', () => console.log('✅ Connected to socket server'));
-    newSocket.on('message', handleMessage);
+    newSocket.on('new-message', handleMessage);
     newSocket.on('typing', handleTyping);
     newSocket.on('messageRead', handleMessageRead);
     newSocket.on('userStatus', handleUserStatus);
@@ -93,19 +93,20 @@ export default function Chat() {
     if (messageListRef.current) {
       messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages]);  
+  
 
   useEffect(() => {
-    console.log('Selected user changed:', selectedUser);  
-    console.log('Selected user:', user);  
+    // console.log('Selected user changed:', selectedUser);  // 🧪 Debug output
+    // console.log('Selected user:', user);  // 🧪 Debug output
 
     const fetchUsers = async () => {
       if (authLoading || !user?.id){
          return;
         }
          else {
-          console.log('here',authLoading)
-          console.log(user.id)
+          // console.log('here',authLoading) // 🧪 Debug output
+          // console.log(user.id) // 🧪 Debug output
          };
 
       try {
@@ -120,10 +121,10 @@ export default function Chat() {
     
         const data = await res.json();
         const filtered = data.filter(u => String(u.id) !== String(user.id));
-        console.log("Fetched users:", filtered); // 🧪 Debug output
+        // console.log("Fetched users:", filtered); // 🧪 Debug output
         setUsers(filtered);
-        console.log('Raw API user list:', data);
-        console.log('Current user ID:', user?.id);
+        // console.log('Raw API user list:', data); // 🧪 Debug output
+        // console.log('Current user ID:', user?.id); // 🧪 Debug output
         
       } catch (err) {
         console.error("Error fetching users:", err);
@@ -140,7 +141,6 @@ export default function Chat() {
     const fetchMessages = async () => {
       try {
         setLoading(true);
-        setError(null);
         const response = await fetch(
           endpoints.messages.getConversation(selectedUser.id),
           {
@@ -152,7 +152,8 @@ export default function Chat() {
         if (response.ok) {
           const data = await response.json();
           setMessages(data);
-
+  
+          // Emit read receipts
           data.forEach(msg => {
             if (!msg.read && msg.senderId === selectedUser.id) {
               socket?.emit('messageRead', {
@@ -174,16 +175,16 @@ export default function Chat() {
         setLoading(false);
       }
     };
-
+  
     if (user?.id && selectedUser?.id) fetchMessages();
-  }, [selectedUser, user, socket]);
+  }, [selectedUser]);  // ✅ Only refetch when selectedUser changes
+  
 
   const sendMessage = async (e) => {
     e.preventDefault();
     if (message.trim() && selectedUser && user) {
       try {
-        setLoading(true);
-        const response = await fetch(endpoints.messages.send(), {
+        await fetch(endpoints.messages.send(), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -194,20 +195,16 @@ export default function Chat() {
             content: message.trim()
           })
         });
-
-        if (!response.ok) throw new Error('Failed to send message');
-
-        const sentMessage = await response.json();
-        setMessages(prev => [...prev, sentMessage]);
-        setMessage('');
+  
+        setMessage('');  // ✅ Just clear input, socket will handle the rest
+  
       } catch (error) {
         console.error('Error sending message:', error);
         setError('Failed to send message');
-      } finally {
-        setLoading(false);
       }
     }
   };
+  
 
 
   const filteredUsers = users.filter(u =>

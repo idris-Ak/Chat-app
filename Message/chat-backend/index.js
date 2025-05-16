@@ -53,6 +53,8 @@ app.get('/api/health', (req, res) => {
 
 // Initialize Socket.io
 const io = initializeSocket(server);
+app.set('io', io);  // ✅ Add this line
+
 
 // Set up associations
 User.hasMany(Message, { foreignKey: 'senderId', as: 'sentMessages' });
