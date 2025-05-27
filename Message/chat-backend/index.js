@@ -1,4 +1,3 @@
-
 require('dotenv').config({ path: __dirname + '/.env' });
 
 const express = require('express');
@@ -11,7 +10,8 @@ const authRoutes = require('./routes/authRoutes');
 const messageRoutes = require('./routes/messageRoutes');
 const userRoutes = require('./routes/userRoutes');
 const auth = require('./middleware/auth');
-const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000', 'https://api.jtaskhubbeta.com.au'];
+// const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000', 'https://api.jtaskhubbeta.com.au'];
+const allowedOrigins = ['http://localhost:3000', process.env.CORS_ORIGIN_WEB_SOCKET];
 
 
 // Import models
