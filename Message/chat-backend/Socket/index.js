@@ -6,15 +6,26 @@ require('dotenv').config(); // Make sure this is loaded at the top if not alread
 
 function initializeSocket(server) {
 
-    console.log('🧾 WS CORS_ORIGIN:', process.env.CORS_ORIGIN_WEB_SOCKET);
-    
+    const allowedOrigins = [
+    'http://localhost:3000',
+    'https://chat-app-beta-six-18.vercel.app',
+    'https://chat-app-idris-aks-projects.vercel.app'
+    ]; 
+
     const io = new Server(server, {
         transports: ["websocket", "polling"], // <-- ADD THIS
         path: "/socket.io",
         allowEIO3: true, // ✅ SUPPORTS older Engine.IO clients
 
         cors: {
-            origin: process.env.CORS_ORIGIN_WEB_SOCKET, // 👈 uses env variable
+            origin: function (origin, callback) {
+                if (!origin || allowedOrigins.includes(origin)) {
+                    callback(null, origin); // ✅ set only one origin
+                } else {
+                    console.warn('⚠️ WS CORS blocked for:', origin);
+                    callback(new Error('Not allowed by WS CORS'));
+                }
+            },
             methods: ["GET", "POST"],
             credentials: false
         }
