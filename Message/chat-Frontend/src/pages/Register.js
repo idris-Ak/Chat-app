@@ -39,14 +39,13 @@ export default function Register() {
         body: JSON.stringify({ email, password, username }),
       });
 
-      const textResponse = await response.json();
+        const data = await response.json();
 
       // console.log(textResponse);  // 🧪 Debug output
       if (response.ok) {
-        localStorage.setItem('token', textResponse.token);
+        localStorage.setItem('token', data.token);
         navigate('/chat');
       } else {
-        const data = await response.json();
         // console.log(data); // 🧪 Debug output
         setError(data.errors ? data.errors.map(err => err.msg).join(', ') : data.message || 'Failed to register');
       }
