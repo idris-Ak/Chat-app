@@ -17,7 +17,7 @@ const Navigation = () => {
   return (
     <nav className="navigation">
       <div className="nav-brand">
-        <Link to="/">TaskHub</Link>
+        <Link to="/">Chat-App</Link>
       </div>
       
       <div className="nav-links">

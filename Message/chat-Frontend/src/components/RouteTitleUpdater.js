@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
 const formatTitle = (segments) => {
-  if (segments.length === 0) return 'jtaskhubbeta';
+  if (segments.length === 0) return 'chat-app';
 
   const capitalized = segments.map(s =>
     s.replace(/[-_]/g, ' ').replace(/\b\w/g, char => char.toUpperCase())
   );
 
-  return `${capitalized.join(' › ')} | jtaskhubbeta`;
+  return `${capitalized.join(' › ')} | chat-app`;
 };
 
 const RouteTitleUpdater = () => {
