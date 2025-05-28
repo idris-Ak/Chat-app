@@ -13,7 +13,7 @@ const auth = require('./middleware/auth');
 // const allowedOrigins = ['https://jtaskhubbeta.com.au','http://localhost:3000', 'https://api.jtaskhubbeta.com.au'];
 const rawOrigins = process.env.CORS_ORIGIN_WEB_SOCKET || '';
 const allowedOrigins = [
-  'http://localhost:3000','https://chat-app-beta-six-18.vercel.app/','https://chat-app-idris-aks-projects.vercel.app/',
+  'http://localhost:3000','https://chat-app-beta-six-18.vercel.app','https://chat-app-idris-aks-projects.vercel.app',
   ...rawOrigins.split(',').map(origin => origin.trim())
 ];
 
